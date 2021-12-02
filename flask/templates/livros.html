@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+
+<table class="table">
+
+    <tr>
+        <th>ID</th>
+        <th>Titulo</th>
+        <th>Autor</th>
+        <th>Gênero</th>
+    </tr>
+    {% for livro in livros %}
+        <tr>
+            <td>{{livro.id}}</td>
+            <td>{{livro.titulo}}</td>
+            <td>{{livro.autor}}</td>
+            <td>{{livro.genero}}</td>
+        </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}

@@ -12,9 +12,11 @@ import os
 import datetime
 import hashlib
 
-from formUsuario import UsuarioForm
 from formLogin import LoginForm
+from formUsuario import UsuarioForm
+from formLivro import LivroForm
 from usuario import Usuario
+from livro import Livro
 
 
 app = Flask(__name__)
@@ -43,11 +45,31 @@ def root():
         
 @app.route('/livros/cadastrar',methods=['POST','GET'])
 def cadastrar_livro():
-    return(u"Não implementado")
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!')
+        return(redirect(url_for('login')))
+    form = LivroForm()
+    if form.validate_on_submit():
+        titulo = request.form['titulo']
+        autor = request.form['autor']
+        genero = request.form['genero']
+        novoLivro = Livro(titulo=titulo,
+                            autor=autor, 
+                            genero=genero)
+        db.session.add(novoLivro)
+        db.session.commit()
+        flash(u'Livro cadastrado com sucesso!')
+        return(redirect(url_for('root')))
+    return (render_template('form.html', form=form, action=url_for('cadastrar_livro')))
 
 @app.route('/livros/listar')
 def listar_livros():
-    return(u"Não implementado")
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!')
+        return(redirect(url_for('login')))
+    livros = Livro.query.order_by(Livro.titulo).all()
+    return(render_template('livros.html', livros=livros))
+
 
 @app.route('/usuario/cadastrar',methods=['POST','GET'])
 def cadastrar_usuario():
@@ -65,7 +87,12 @@ def cadastrar_usuario():
                 admin = True
         except:
             admin = False
-        novoUsuario = Usuario(nome=nome,username=username,email=email,telefone=telefone,senha=senhahash,admin=admin)
+        novoUsuario = Usuario(nome=nome,
+                                username=username,
+                                email=email,
+                                telefone=telefone,
+                                senha=senhahash,
+                                admin=admin)
         db.session.add(novoUsuario)
         db.session.commit()
         flash(u'Usuário cadastrado com sucesso!')
