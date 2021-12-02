@@ -140,8 +140,34 @@ def listar_emprestimos():
     emprestimos = Emprestimo.query.order_by(Emprestimo.data_emprestimo.desc()).all()
     return(render_template('emprestimos.html', emprestimos=emprestimos))
 
+@app.route('/livro/devolver/<id_emprestimo>', methods=['POST','GET'])
+def devolver_emprestimo(id_emprestimo):
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!')
+        return(redirect(url_for('login')))
+    id_emprestimo = int(id_emprestimo)
+    emprestimo = Emprestimo.query.get(id_emprestimo)
+    emprestimo.data_devolucao = datetime.datetime.now()
+    livro = Livro.query.get(emprestimo.id_livro)
+    livro.disponivel = True
+    db.session.commit()
+    return (redirect(url_for('root')))
 
-@app.route('/fichas/cadastrar', methods=['POST','GET'])
+@app.route('/livro/remover/<id_emprestimo>', methods=['POST','GET'])
+def remover_emprestimo(id_emprestimo):
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!')
+        return(redirect(url_for('login')))
+    id_emprestimo = int(id_emprestimo)
+    emprestimo = Emprestimo.query.get(id_emprestimo)
+    id_livro = emprestimo.id_livro
+    livro = Livro.query.get(id_livro)
+    livro.disponivel = True
+    db.session.delete(emprestimo)
+    db.session.commit()
+    return (redirect(url_for('root')))
+
+@app.route('/ficha/cadastrar', methods=['POST','GET'])
 def cadastrar_ficha():
     if session.get('autenticado',False)==False:
         flash(u'Login necessário!')
@@ -160,7 +186,7 @@ def cadastrar_ficha():
         return(redirect(url_for('root')))
     return (render_template('form.html', form=form, action=url_for('cadastrar_ficha')))
 
-@app.route('/fichas/listar')
+@app.route('/ficha/listar')
 def listar_fichas():
     if session.get('autenticado',False)==False:
         flash(u'Login necessário!')

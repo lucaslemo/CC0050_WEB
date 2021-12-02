@@ -11,6 +11,8 @@
         <th>Titulo do Livro</th>
         <th>Entrega</th>
         <th>Devolução</th>
+        <th>Devolver</th>
+        <th>Remover</th>
     </tr>
     {% for emprestimo in emprestimos %}
         <tr>
@@ -25,6 +27,8 @@
             {% else %}
                 <td>NÃO DEVOLVIDA</td>
             {% endif %}
+            <td><a href="{{url_for('devolver_emprestimo',id_emprestimo=emprestimo.id)}}">DEVOLVER</a></td>
+            <td><a href="{{url_for('remover_emprestimo',id_emprestimo=emprestimo.id)}}">REMOVER</a></td>
 
         </tr>
     {% endfor %}
