@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+
+<table class="table table-dark table-striped">
+
+    <tr>
+        <th>ID do empréstimo</th>
+        <th>Responsável</th>
+        <th>Dono da Ficha</th>
+        <th>Titulo do Livro</th>
+        <th>Entrega</th>
+        <th>Devolução</th>
+    </tr>
+    {% for emprestimo in emprestimos %}
+        <tr>
+
+            <td>{{emprestimo.id}}</td>
+            <td>{{emprestimo.usuario.nome}}</td>
+            <td>{{emprestimo.ficha.nome}}</td>
+            <td>{{emprestimo.livro.titulo}}</td>
+            <td>{{emprestimo.data_emprestimo.strftime('%d/%m/%Y %H:%M')}}</td>
+            {% if emprestimo.data_devolucao is not none %}
+                <td>{{emprestimo.data_devolucao.strftime('%d/%m/%Y %H:%M')}}</td>
+            {% else %}
+                <td>NÃO DEVOLVIDA</td>
+            {% endif %}
+
+        </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}
