@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  flask:
+    image: flask:cc0050_projeto
+    build: .
+    volumes:
+      - ./flask:/flask
+    environment:
+       TZ: America/Fortaleza
+    restart: always
+    ports:
+      - "4005:80"
