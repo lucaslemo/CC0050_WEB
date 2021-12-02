@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+
+<table class="table">
+
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Nome de Usuário</th>
+        <th>E-mail</th>
+        <th>Telefone</th>
+        <th>Administrador</th>
+    </tr>
+    {% for usuario in usuarios %}
+        <tr>
+
+            <td>{{usuario.id}}</td>
+            <td>{{usuario.nome}}</td>
+            <td>{{usuario.username}}</td>
+            <td>{{usuario.email}}</td>
+            <td>{{usuario.telefone}}</td>
+            {% if usuario.admin %}
+            <td>Sim</td>
+            {% else %}
+            <td>Não</td>
+            {% endif %}
+
+        </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}
