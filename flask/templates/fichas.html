@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+
+<table class="table table-dark table-striped">
+
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>CPF</th>
+        <th>E-mail</th>
+    </tr>
+    {% for ficha in fichas %}
+        <tr>
+
+            <td>{{ficha.id}}</td>
+            <td>{{ficha.nome}}</td>
+            <td>{{ficha.cpf}}</td>
+            <td>{{ficha.email}}</td>
+        </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}

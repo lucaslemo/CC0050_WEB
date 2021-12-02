@@ -7,4 +7,5 @@ class Usuario(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     telefone = db.Column(db.String(20),unique=False, nullable=False)
     senha = db.Column(db.String(80), unique=False, nullable=False)
-    admin = db.Column(db.Boolean(), unique=False, nullable=False)
+    admin = db.Column(db.Boolean(), default=False)
+    emprestimo = db.relationship('Emprestimo', backref='usuario', lazy=True)

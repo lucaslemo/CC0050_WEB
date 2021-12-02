@@ -2,7 +2,7 @@
 
 {% block conteudo %}
 
-<table class="table">
+<table class="table table-dark table-striped">
 
     <tr>
         <th>ID</th>
@@ -21,9 +21,9 @@
             <td>{{usuario.email}}</td>
             <td>{{usuario.telefone}}</td>
             {% if usuario.admin %}
-            <td>Sim</td>
+                <td>Sim</td>
             {% else %}
-            <td>Não</td>
+                <td>Não</td>
             {% endif %}
 
         </tr>

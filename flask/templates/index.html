@@ -8,6 +8,18 @@
 <p>
     <a href="{{url_for('listar_livros')}}">LISTAR LIVROS</a>
 </p>
+<p>
+    <a href="{{url_for('cadastrar_ficha')}}">CADASTRAR FICHA DE LEITOR</a>
+</p>
+<p>
+    <a href="{{url_for('listar_fichas')}}">LISTAR FICHAS DE LEITORES</a>
+</p>
+<p>
+    <a href="{{url_for('emprestar_livro')}}">EMPRESTAR LIVRO</a>
+</p>
+<p>
+    <a href="{{url_for('listar_emprestimos')}}">LISTAR EMPRESTIMOS</a>
+</p>
 {% if session.get('admin') == True %}
 <p>
     <a href="{{url_for('cadastrar_usuario')}}">CADASTRAR USUÁRIO</a>

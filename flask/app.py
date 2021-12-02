@@ -13,8 +13,12 @@ import datetime
 import hashlib
 
 from formLogin import LoginForm
+from formFicha import FichaForm
+from formEmprestimo import EmprestimoForm
 from formUsuario import UsuarioForm
 from formLivro import LivroForm
+from ficha import Ficha
+from emprestimo import Emprestimo
 from usuario import Usuario
 from livro import Livro
 
@@ -43,7 +47,7 @@ def inicializar_bd():
 def root():
     return (render_template('index.html'))
         
-@app.route('/livros/cadastrar',methods=['POST','GET'])
+@app.route('/livro/cadastrar', methods=['POST','GET'])
 def cadastrar_livro():
     if session.get('autenticado',False)==False:
         flash(u'Login necessário!')
@@ -62,7 +66,7 @@ def cadastrar_livro():
         return(redirect(url_for('root')))
     return (render_template('form.html', form=form, action=url_for('cadastrar_livro')))
 
-@app.route('/livros/listar')
+@app.route('/livro/listar')
 def listar_livros():
     if session.get('autenticado',False)==False:
         flash(u'Login necessário!')
@@ -71,7 +75,7 @@ def listar_livros():
     return(render_template('livros.html', livros=livros))
 
 
-@app.route('/usuario/cadastrar',methods=['POST','GET'])
+@app.route('/usuario/cadastrar', methods=['POST','GET'])
 def cadastrar_usuario():
     form = UsuarioForm()
     if form.validate_on_submit():
@@ -104,13 +108,65 @@ def listar_usuarios():
     usuarios = Usuario.query.order_by(Usuario.nome).all()
     return(render_template('usuarios.html', usuarios=usuarios))
 
-@app.route('/livros/emprestar',methods=['POST','GET'])
-def emprestar_chave():
-    return(u"Não implementado")
+@app.route('/livro/emprestimo', methods=['POST','GET'])
+def emprestar_livro():
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!')
+        return(redirect(url_for('login')))
+    form = EmprestimoForm()
+    fichas = Ficha.query.order_by(Ficha.nome).all()
+    livros = Livro.query.filter(Livro.disponivel==True).order_by(Livro.titulo).all()
+    form.ficha.choices = [(f.id, f.nome) for f in fichas]
+    form.livro.choices = [(l.id, l.titulo) for l in livros]
+    if form.validate_on_submit():
+        id_ficha = int(request.form['ficha'])
+        id_livro = int(request.form['livro'])
+        novoEmprestimo = Emprestimo(id_usuario=int(session['usuario']),
+                                    id_ficha=id_ficha,
+                                    id_livro=id_livro)
+        livroAlterado = Livro.query.get(id_livro)
+        livroAlterado.disponivel = False
+        db.session.add(novoEmprestimo)
+        db.session.commit()
+        flash(u'Empréstimo realizado com sucesso!')
+        return(redirect(url_for('root')))
+    return(render_template('form.html',form=form,action=url_for('emprestar_livro')))
 
-@app.route('/livros/listar_emprestimos')
+@app.route('/livro/emprestimo/listar')
 def listar_emprestimos():
-    return(u"Não implementado")
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!')
+        return(redirect(url_for('login')))
+    emprestimos = Emprestimo.query.order_by(Emprestimo.data_emprestimo.desc()).all()
+    return(render_template('emprestimos.html', emprestimos=emprestimos))
+
+
+@app.route('/fichas/cadastrar', methods=['POST','GET'])
+def cadastrar_ficha():
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!')
+        return(redirect(url_for('login')))
+    form = FichaForm()
+    if form.validate_on_submit():
+        nome = request.form['nome']
+        cpf = request.form['cpf']
+        email = request.form['email']
+        novaFicha = Ficha(nome=nome,
+                            cpf=cpf,
+                            email=email)
+        db.session.add(novaFicha)
+        db.session.commit()
+        flash(u'Ficha cadastrada com sucesso!')
+        return(redirect(url_for('root')))
+    return (render_template('form.html', form=form, action=url_for('cadastrar_ficha')))
+
+@app.route('/fichas/listar')
+def listar_fichas():
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!')
+        return(redirect(url_for('login')))
+    fichas = Ficha.query.order_by(Ficha.nome).all()
+    return(render_template('fichas.html', fichas=fichas))
 
 @app.route('/usuario/login',methods=['POST','GET'])
 def login():
@@ -135,7 +191,7 @@ def login():
 @app.route('/usuario/logout',methods=['POST','GET'])
 def logout():
     session.clear()
-    return(redirect(url_for('login')))
+    return(redirect(url_for('root')))
 
 if __name__ == "__main__":
     serve(app, host='0.0.0.0', port=80, url_prefix='/app')
