@@ -9,7 +9,7 @@
         <th>Responsável</th>
         <th>Dono da Ficha</th>
         <th>Titulo do Livro</th>
-        <th>Entrega</th>
+        <th>Empréstimo</th>
         <th>Devolução</th>
         <th>Devolver</th>
         <th>Remover</th>
@@ -27,8 +27,12 @@
             {% else %}
                 <td>NÃO DEVOLVIDA</td>
             {% endif %}
-            <td><a href="{{url_for('devolver_emprestimo',id_emprestimo=emprestimo.id)}}">DEVOLVER</a></td>
-            <td><a href="{{url_for('remover_emprestimo',id_emprestimo=emprestimo.id)}}">REMOVER</a></td>
+            <td>
+                <a class="btn btn-success btn-sm" href="{{url_for('devolver_emprestimo',id_emprestimo=emprestimo.id)}}" role="button">DEVOLVER</a>
+            </td>
+            <td>
+                <a class="btn btn-danger btn-sm" href="{{url_for('remover_emprestimo',id_emprestimo=emprestimo.id)}}" role="button">REMOVER</a>
+            </td>
 
         </tr>
     {% endfor %}

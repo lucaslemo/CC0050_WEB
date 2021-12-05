@@ -8,14 +8,17 @@
       
     </head>
 <body>
-  
-  <div class="p-3 mb-2 bg-dark text-white">
-    {% if session.get('autenticado',False)==False %}
-      <a class="btn btn-primary btn-sm" href="{{url_for('login')}}" role="button">Login</a>
-    {% else %}
-      <a class="btn btn-secondary btn-sm" href="{{url_for('logout')}}" role="button">Logout</a>
-      Usuário: {{session.get('username')}}
-    {% endif %}
+
+  <div class="row align-items-center">
+    <div class="col mr-1">
+  {% if session.get('autenticado',False)==False %}
+    <a class="btn btn-primary btn-sm" href="{{url_for('login')}}" role="button">Login</a>
+  {% else %}
+    <a class="btn btn-secondary btn-sm" href="{{url_for('logout')}}" role="button">Logout</a>
+    Usuário: {{session.get('username')}}
+  {% endif %}
+    </div>
+    <div class="col mr-1">Coluna</div>
   </div>
 
   {% with messages = get_flashed_messages() %}

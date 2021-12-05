@@ -2,31 +2,91 @@
 
 {% block conteudo %}
 
-<p>
-    <a href="{{url_for('cadastrar_livro')}}">CADASTRAR LIVRO</a>
-</p>
-<p>
-    <a href="{{url_for('listar_livros')}}">LISTAR LIVROS</a>
-</p>
-<p>
-    <a href="{{url_for('cadastrar_ficha')}}">CADASTRAR FICHA DE LEITOR</a>
-</p>
-<p>
-    <a href="{{url_for('listar_fichas')}}">LISTAR FICHAS DE LEITORES</a>
-</p>
-<p>
-    <a href="{{url_for('emprestar_livro')}}">EMPRESTAR LIVRO</a>
-</p>
-<p>
-    <a href="{{url_for('listar_emprestimos')}}">LISTAR EMPRESTIMOS</a>
-</p>
-{% if session.get('admin') == True %}
-<p>
-    <a href="{{url_for('cadastrar_usuario')}}">CADASTRAR USUÁRIO</a>
-</p>
-<p>
-    <a href="{{url_for('listar_usuarios')}}">LISTAR USUÁRIOS</a>
-</p>
-{% endif %}
+<div class="container">
+    <div class="row align-items-center">
+      <div class="col align-self-center">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title">Cadastrar Livro</h5>
+              <p class="card-text">Cadastrar um novo livro na biblioteca.</p>
+              <a href="{{url_for('cadastrar_livro')}}" class="btn btn-primary btn-sm">Ir</a>
+            </div>
+        </div>
+      </div>
+      <div class="col align-self-center">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title">Listar Livros</h5>
+              <p class="card-text">Lista dos livros da biblioteca.</p>
+              <a href="{{url_for('listar_livros')}}" class="btn btn-primary btn-sm">Ir</a>
+            </div>
+        </div>
+      </div>
+      <div class="col align-self-center">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title">Cadastrar Leitor</h5>
+              <p class="card-text">Cadastrar uma nova ficha para um leitor.</p>
+              <a href="{{url_for('cadastrar_ficha')}}" class="btn btn-primary btn-sm">Ir</a>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="row align-items-center">
+        <div class="col align-self-center">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  <h5 class="card-title">Listar Leitor</h5>
+                  <p class="card-text">Listar as fichas de leitores cadastradas.</p>
+                  <a href="{{url_for('listar_fichas')}}" class="btn btn-primary btn-sm">Ir</a>
+                </div>
+            </div>
+        </div>
+        <div class="col align-self-center">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Emprestar Livro</h5>
+                    <p class="card-text">Empresta um livro da biblioteca para um leitor cadastrado.</p>
+                    <a href="{{url_for('emprestar_livro')}}" class="btn btn-primary btn-sm">Ir</a>
+                </div>
+            </div>
+        </div>
+        <div class="col align-self-center">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Listar Empréstimos</h5>
+                    <p class="card-text">Lista os empréstimos feitos.</p>
+                    <a href="{{url_for('listar_emprestimos')}}" class="btn btn-primary btn-sm">Ir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if session.get('admin') == True %}
+    <div class="row align-items-center">
+        <div class="col align-self-center">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Cadastrar Usuário</h5>
+                    <p class="card-text">Cadastra um novo usuário no sistema.</p>
+                    <a href="{{url_for('cadastrar_usuario')}}" class="btn btn-primary btn-sm">Ir</a>
+                </div>
+            </div>
+        </div>
+        <div class="col align-self-center">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Lista Usuários</h5>
+                    <p class="card-text">Lista os usuários cadastrados no sistema.</p>
+                    <a href="{{url_for('listar_usuarios')}}" class="btn btn-primary btn-sm">Ir</a>
+                </div>
+            </div>
+        </div>
+        <div class="col align-self-center">
+        </div>
+    </div>
+    {% endif %}
+
+</div>
 
 {% endblock %}

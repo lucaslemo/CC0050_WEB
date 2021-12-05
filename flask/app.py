@@ -149,7 +149,11 @@ def devolver_emprestimo(id_emprestimo):
     emprestimo = Emprestimo.query.get(id_emprestimo)
     emprestimo.data_devolucao = datetime.datetime.now()
     livro = Livro.query.get(emprestimo.id_livro)
-    livro.disponivel = True
+    if livro.disponivel == True:
+        flash(u'O livro já foi devolvido!')
+    else:
+        livro.disponivel = True
+        flash(u'Livro devolvido com sucesso!')
     db.session.commit()
     return (redirect(url_for('root')))
 
