@@ -216,7 +216,7 @@ def login():
         else:
             flash(u'Usuário ou senha não conferem!', category='warning')
             return(redirect(url_for('login')))
-    return (render_template('form.html', form=form, action=url_for('login')))
+    return (render_template('formLogin.html', form=form, action=url_for('login')))
 
 @app.route('/usuario/logout',methods=['POST','GET'])
 def logout():
