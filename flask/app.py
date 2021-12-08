@@ -50,7 +50,7 @@ def root():
 @app.route('/livro/cadastrar', methods=['POST','GET'])
 def cadastrar_livro():
     if session.get('autenticado',False)==False:
-        flash(u'Login necessário!')
+        flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
     form = LivroForm()
     if form.validate_on_submit():
@@ -62,14 +62,14 @@ def cadastrar_livro():
                             genero=genero)
         db.session.add(novoLivro)
         db.session.commit()
-        flash(u'Livro cadastrado com sucesso!')
+        flash(u'Livro cadastrado com sucesso!', category='info')
         return(redirect(url_for('root')))
     return (render_template('form.html', form=form, action=url_for('cadastrar_livro')))
 
 @app.route('/livro/listar')
 def listar_livros():
     if session.get('autenticado',False)==False:
-        flash(u'Login necessário!')
+        flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
     livros = Livro.query.order_by(Livro.titulo).all()
     return(render_template('livros.html', livros=livros))
@@ -99,7 +99,7 @@ def cadastrar_usuario():
                                 admin=admin)
         db.session.add(novoUsuario)
         db.session.commit()
-        flash(u'Usuário cadastrado com sucesso!')
+        flash(u'Usuário cadastrado com sucesso!', category='info')
         return(redirect(url_for('root')))
     return (render_template('form.html', form=form, action=url_for('cadastrar_usuario')))
 
@@ -111,7 +111,7 @@ def listar_usuarios():
 @app.route('/livro/emprestimo', methods=['POST','GET'])
 def emprestar_livro():
     if session.get('autenticado',False)==False:
-        flash(u'Login necessário!')
+        flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
     form = EmprestimoForm()
     fichas = Ficha.query.order_by(Ficha.nome).all()
@@ -128,14 +128,14 @@ def emprestar_livro():
         livroAlterado.disponivel = False
         db.session.add(novoEmprestimo)
         db.session.commit()
-        flash(u'Empréstimo realizado com sucesso!')
+        flash(u'Empréstimo realizado com sucesso!', category='info')
         return(redirect(url_for('root')))
     return(render_template('form.html',form=form,action=url_for('emprestar_livro')))
 
 @app.route('/livro/emprestimo/listar')
 def listar_emprestimos():
     if session.get('autenticado',False)==False:
-        flash(u'Login necessário!')
+        flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
     emprestimos = Emprestimo.query.order_by(Emprestimo.data_emprestimo.desc()).all()
     return(render_template('emprestimos.html', emprestimos=emprestimos))
@@ -143,24 +143,24 @@ def listar_emprestimos():
 @app.route('/livro/devolver/<id_emprestimo>', methods=['POST','GET'])
 def devolver_emprestimo(id_emprestimo):
     if session.get('autenticado',False)==False:
-        flash(u'Login necessário!')
+        flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
     id_emprestimo = int(id_emprestimo)
     emprestimo = Emprestimo.query.get(id_emprestimo)
     emprestimo.data_devolucao = datetime.datetime.now()
     livro = Livro.query.get(emprestimo.id_livro)
     if livro.disponivel == True:
-        flash(u'O livro já foi devolvido!')
+        flash(u'O livro já foi devolvido!', category='warning')
     else:
         livro.disponivel = True
-        flash(u'Livro devolvido com sucesso!')
+        flash(u'Livro devolvido com sucesso!', category='info')
     db.session.commit()
     return (redirect(url_for('root')))
 
 @app.route('/livro/remover/<id_emprestimo>', methods=['POST','GET'])
 def remover_emprestimo(id_emprestimo):
     if session.get('autenticado',False)==False:
-        flash(u'Login necessário!')
+        flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
     id_emprestimo = int(id_emprestimo)
     emprestimo = Emprestimo.query.get(id_emprestimo)
@@ -174,7 +174,7 @@ def remover_emprestimo(id_emprestimo):
 @app.route('/ficha/cadastrar', methods=['POST','GET'])
 def cadastrar_ficha():
     if session.get('autenticado',False)==False:
-        flash(u'Login necessário!')
+        flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
     form = FichaForm()
     if form.validate_on_submit():
@@ -186,14 +186,14 @@ def cadastrar_ficha():
                             email=email)
         db.session.add(novaFicha)
         db.session.commit()
-        flash(u'Ficha cadastrada com sucesso!')
+        flash(u'Ficha cadastrada com sucesso!', category='info')
         return(redirect(url_for('root')))
     return (render_template('form.html', form=form, action=url_for('cadastrar_ficha')))
 
 @app.route('/ficha/listar')
 def listar_fichas():
     if session.get('autenticado',False)==False:
-        flash(u'Login necessário!')
+        flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
     fichas = Ficha.query.order_by(Ficha.nome).all()
     return(render_template('fichas.html', fichas=fichas))
@@ -209,12 +209,12 @@ def login():
         if (len(linha) > 0):
             session['autenticado'] = True
             session['usuario'] = linha[0].id
-            session['username'] = linha[0].username
+            session['nome'] = linha[0].nome
             session['admin'] = linha[0].admin
-            flash(u'Usuário autenticado com sucesso!')
+            flash(u'Usuário autenticado com sucesso!', category='info')
             return(redirect(url_for('root')))
         else:
-            flash(u'Usuário ou senha não conferem!')
+            flash(u'Usuário ou senha não conferem!', category='warning')
             return(redirect(url_for('login')))
     return (render_template('form.html', form=form, action=url_for('login')))
 
