@@ -221,6 +221,7 @@ def login():
 @app.route('/usuario/logout',methods=['POST','GET'])
 def logout():
     session.clear()
+    flash(u'Sessão encerrada com sucesso!', category='info')
     return(redirect(url_for('root')))
 
 if __name__ == "__main__":

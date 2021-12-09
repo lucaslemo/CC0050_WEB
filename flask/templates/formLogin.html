@@ -50,8 +50,11 @@
                     {{ render_field(form.usuario) }}
                     {{ render_field(form.senha) }}
                 </div>
-                <div class="mx-auto my-2" style="width: 83.91px;">
+                <div class="mx-auto mt-3 mb-2" style="width: 83.91px;">
                     {{ render_field(form.enviar, button_style="primary", button_size="md") }}
+                </div>
+                <div class="mx-auto my-2" style="width: 66.33px;">
+                    <a class="btn btn-secondary btn-sm" href="{{url_for('root')}}">VOLTAR</a>
                 </div>
             </form>
         </div>
