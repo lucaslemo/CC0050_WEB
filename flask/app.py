@@ -218,7 +218,7 @@ def listar_fichas():
                 elif unidecode(campo_busca).upper() == unidecode(ficha.cpf).upper():
                     fichas.append(ficha)
         if len(fichas) == 0:
-            flash(u'Nenhum item corresponde ao valor pesquisa!', category='warning')
+            flash(u'Nenhum item corresponde ao valor pesquisado!', category='warning')
         return(render_template('fichas.html', fichas=fichas, form=form, action=url_for('listar_fichas')))
     fichas = Ficha.query.order_by(Ficha.nome).all()
     return(render_template('fichas.html', fichas=fichas, form=form, action=url_for('listar_fichas')))
