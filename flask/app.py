@@ -125,7 +125,8 @@ def emprestar_livro():
         id_livro = int(request.form['livro'])
         novoEmprestimo = Emprestimo(id_usuario=int(session['usuario']),
                                     id_ficha=id_ficha,
-                                    id_livro=id_livro)
+                                    id_livro=id_livro,
+                                    data_emprestimo=datetime.datetime.now())
         livroAlterado = Livro.query.get(id_livro)
         livroAlterado.disponivel = False
         db.session.add(novoEmprestimo)

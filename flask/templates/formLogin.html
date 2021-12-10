@@ -8,6 +8,16 @@
         
         </head>
     <body>
+
+        <div class="row mx-0 mb-3 mt-3">
+            <div class="col-md-auto ms-2 my-auto" style="width: 62px;">
+                <img src="{{url_for('static', filename='Biblioteca_icon.png')}}" style="width: 50px; height: 50px;">
+            </div>
+            <div class="col my-auto" style="height: 100%;">
+              Sistema de Gestão de Biblioteca
+            </div>
+        </div>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -43,7 +53,7 @@
         <div class="container-fluid border rounded-3 mt-5 mx-auto" style="width: 500px;">
             <form method="post">
                 <div class="text-center mt-2">
-                    <h3>Login</h3>
+                    <h3>Login de Usuário</h3>
                 </div>
                 {{ form.csrf_token() }}
                 <div class="mx-auto mt-2" style="width: 200px;">
