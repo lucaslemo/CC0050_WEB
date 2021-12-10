@@ -2,49 +2,77 @@
 
 {% block conteudo %}
 
-<table class="table table-dark table-striped">
+<div class="container-fluid mx-auto" style="width: 75%;">
+    {% from 'bootstrap/form.html' import render_field %}
 
-    <tr>
-        <th>ID do empréstimo</th>
-        <th>Responsável</th>
-        <th>Dono da Ficha</th>
-        <th>Titulo do Livro</th>
-        <th>Empréstimo</th>
-        <th>Devolução</th>
-        <th>Devolver</th>
-        <th>Remover</th>
-    </tr>
-    {% for emprestimo in emprestimos %}
-        <tr>
-
-            <td>{{emprestimo.id}}</td>
-            <td>{{emprestimo.usuario.nome}}</td>
-            <td>{{emprestimo.ficha.nome}}</td>
-            <td>{{emprestimo.livro.titulo}}</td>
-            <td>{{emprestimo.data_emprestimo.strftime('%d/%m/%Y %H:%M')}}</td>
-            {% if emprestimo.data_devolucao is not none %}
-                <td>{{emprestimo.data_devolucao.strftime('%d/%m/%Y %H:%M')}}</td>
-            {% else %}
-                <td>NÃO DEVOLVIDA</td>
-            {% endif %}
-            <td>
-                <a class="btn btn-success btn-sm" href="{{url_for('devolver_emprestimo',id_emprestimo=emprestimo.id)}}" role="button">DEVOLVER</a>
-            </td>
-            <td>
-                <a class="btn btn-danger btn-sm" href="{{url_for('remover_emprestimo',id_emprestimo=emprestimo.id)}}" role="button">REMOVER</a>
-            </td>
-
-        </tr>
-    {% endfor %}
-
-</table>
-
-<hr>
+    <form method="post">
+        {{ form.csrf_token() }}
+        <div class="mt-2" style="width: 200px;">
+            {{ render_field(form.campo) }}
+        </div>
+        <div class="mt-2 mb-2">
+            {{ render_field(form.enviar, button_style="primary", button_size="sm") }}
+            <a class="btn btn-secondary btn-sm" href="{{url_for('listar_usuarios')}}" role="button">LIMPAR</a>
+        </div>
+    </form>
+    <div style="max-height: 400px; overflow-y: auto;">
+        <table class=" table table-light border rounded-3" style="overflow: hidden;">
+            <thead>
+            <tr class="table-secondary">
+                <th scope="col">ID</th>
+                <th scope="col">Responsável</th>
+                <th scope="col">Dono da Ficha</th>
+                <th scope="col">Título do Livro</th>
+                <th scope="col">Data do Empréstimo</th>
+                <th scope="col">Data da Devolução</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbod>
+                {% for emprestimo in emprestimos %}
+                    <tr>
+                        <th scope="row">{{emprestimo.id}}</th>
+                        {% if emprestimo.usuario.nome is not none %}
+                            <td>{{emprestimo.usuario.nome}}</td>
+                        {% else %}
+                            <td>Sem dados</td>
+                        {% endif %}
+                        {% if emprestimo.ficha is not none %}
+                            <td>{{emprestimo.ficha.nome}}</td>
+                        {% else %}
+                            <td>Sem dados</td>
+                        {% endif %}
+                        {% if emprestimo.livro.titulo is not none %}
+                            <td>{{emprestimo.livro.titulo}}</td>
+                        {% else %}
+                            <td>Sem dados</td>
+                        {% endif %}
+                        <td>{{emprestimo.data_emprestimo.strftime('%d/%m/%Y %H:%M')}}</td>
+                        {% if emprestimo.data_devolucao is not none %}
+                            <td>{{emprestimo.data_devolucao.strftime('%d/%m/%Y %H:%M')}}</td>
+                            <td class="text-center">
+                                <a class="btn btn-secondary btn-sm" href="{{url_for('devolver_emprestimo',id_emprestimo=emprestimo.id)}}" role="button">DEVOLVER</a>
+                            </td>
+                        {% else %}
+                            <td>NÃO DEVOLVIDA</td>
+                            <td class="text-center">
+                                <a class="btn btn-success btn-sm" href="{{url_for('devolver_emprestimo',id_emprestimo=emprestimo.id)}}" role="button">DEVOLVER</a>
+                            </td>
+                        {% endif %}
+                        <td class="text-center"><a class="btn btn-danger btn-sm" href="{{url_for('remover_emprestimo',id_emprestimo=emprestimo.id)}}" role="button">REMOVER</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <hr>
     <div class="row text-center">
         <div class="col mr-1">
-            <a class="btn btn-primary btn-sm" href="{{url_for('root')}}" role="button">Voltar</a>
+            <a class="btn btn-primary" href="{{url_for('root')}}" role="button">VOLTAR</a>
         </div>
     </div>
-</hr>
+</div>
+
 
 {% endblock %}

@@ -2,39 +2,57 @@
 
 {% block conteudo %}
 
-<table class="table table-dark table-striped">
+<div class="container-fluid mx-auto" style="width: 75%;">
+    {% from 'bootstrap/form.html' import render_field %}
 
-    <tr>
-        <th>ID</th>
-        <th>Titulo</th>
-        <th>Autor</th>
-        <th>Gênero</th>
-        <th>Disponível</tr>
-    </tr>
-    {% for livro in livros %}
-        <tr>
+    <form method="post">
+        {{ form.csrf_token() }}
+        <div class="mt-2" style="width: 200px;">
+            {{ render_field(form.campo) }}
+        </div>
+        <div class="mt-2 mb-2">
+            {{ render_field(form.enviar, button_style="primary", button_size="sm") }}
+            <a class="btn btn-secondary btn-sm" href="{{url_for('listar_livros')}}" role="button">LIMPAR</a>
+        </div>
+    </form>
+    <div style="max-height: 400px; overflow-y: auto;">
+        <table class=" table table-light border rounded-3" style="overflow: hidden;">
+            <thead>
+            <tr class="table-secondary">
+                <th scope="col">ID</th>
+                <th scope="col">Titulo</th>
+                <th scope="col">Autor</th>
+                <th scope="col">Gênero</th>
+                <th scope="col">Disponível</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for livro in livros %}
+                    <tr>
+                        <th scope="row">{{livro.id}}</th>
+                        <td>{{livro.titulo}}</td>
+                        <td>{{livro.autor}}</td>
+                        <td>{{livro.genero}}</td>
+                        {% if livro.disponivel == True %}
+                            <td>Sim</td>
+                        {% else %}
+                            <td>Não</td>
+                        {% endif %}
+                        <td class="text-center"><a class="btn btn-danger btn-sm" href="{{url_for('remover_livro', id_livro=livro.id)}}" role="button">REMOVER</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-            <td>{{livro.id}}</td>
-            <td>{{livro.titulo}}</td>
-            <td>{{livro.autor}}</td>
-            <td>{{livro.genero}}</td>
-            {% if livro.disponivel == True %}
-                <td>Sim</td>
-            {% else %}
-                 <td>Não</td>
-            {% endif %}
-            
-        </tr>
-    {% endfor %}
-
-</table>
-
-<hr>
+    <hr>
     <div class="row text-center">
         <div class="col mr-1">
-            <a class="btn btn-primary btn-sm" href="{{url_for('root')}}" role="button">Voltar</a>
+            <a class="btn btn-primary" href="{{url_for('root')}}" role="button">VOLTAR</a>
         </div>
     </div>
-</hr>
+</div>
+
 
 {% endblock %}

@@ -15,7 +15,7 @@ import hashlib
 
 from formLogin import LoginForm
 from formFicha import FichaForm
-from formBuscaFicha import BuscaFichaForm
+from formBusca import BuscaForm
 from formEmprestimo import EmprestimoForm
 from formUsuario import UsuarioForm
 from formLivro import LivroForm
@@ -68,14 +68,59 @@ def cadastrar_livro():
         return(redirect(url_for('root')))
     return (render_template('form.html', form=form, action=url_for('cadastrar_livro')))
 
-@app.route('/livro/listar')
+@app.route('/livro/listar', methods=['POST','GET'])
 def listar_livros():
     if session.get('autenticado',False)==False:
         flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
+    form = BuscaForm()
+    if form.validate_on_submit():
+        livros_teste = Livro.query.order_by(Livro.titulo).all()
+        livros = list()
+        campo_busca = request.form['campo']
+        try:
+            campo_id = int(campo_busca)
+            for livro in livros_teste:
+                if campo_id == livro.id:
+                    livros.append(livro)
+                elif unidecode(campo_busca).upper() == unidecode(livro.titulo).upper():
+                    livros.append(livro)
+                elif unidecode(campo_busca).upper() == unidecode(livro.autor).upper():
+                    livros.append(livro)
+                elif unidecode(campo_busca).upper() == unidecode(livro.genero).upper():
+                    livros.append(livro)
+        except:
+            for livro in livros_teste:
+                if unidecode(campo_busca).upper() == unidecode(livro.titulo).upper():
+                    livros.append(livro)
+                elif unidecode(campo_busca).upper() == unidecode(livro.autor).upper():
+                    livros.append(livro)
+                elif unidecode(campo_busca).upper() == unidecode(livro.genero).upper():
+                    livros.append(livro)
+        if len(livros) == 0:
+            flash(u'Nenhum item corresponde ao valor pesquisado!', category='warning')
+        return(render_template('livros.html', livros=livros, form=form, action=url_for('listar_livros')))
     livros = Livro.query.order_by(Livro.titulo).all()
-    return(render_template('livros.html', livros=livros))
+    return(render_template('livros.html', livros=livros, form=form, action=url_for('listar_livros')))
 
+
+@app.route('/livro/remover/<id_livro>', methods=['POST','GET'])
+def remover_livro(id_livro):
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    if session['admin'] == True:
+        id_livro = int(id_livro)
+        livro = Livro.query.get(id_livro)
+        if livro.disponivel == True:
+            db.session.delete(livro)
+            db.session.commit()
+            flash(u'Livro removido com sucesso!', category='info')
+            return (redirect(url_for('listar_livros')))
+        flash(u'O livro precisa estar disponível!', category='warning')
+        return (redirect(url_for('listar_livros')))
+    flash(u'Apenas administradores podem remover livros!', category='warning')
+    return (redirect(url_for('root')))
 
 @app.route('/usuario/cadastrar', methods=['POST','GET'])
 def cadastrar_usuario():
@@ -105,12 +150,57 @@ def cadastrar_usuario():
         return(redirect(url_for('root')))
     return (render_template('form.html', form=form, action=url_for('cadastrar_usuario')))
 
-@app.route('/usuario/listar')
+@app.route('/usuario/listar', methods=['POST','GET'])
 def listar_usuarios():
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    form = BuscaForm()
+    if form.validate_on_submit():
+        usuarios_teste = Usuario.query.order_by(Usuario.nome).all()
+        usuarios = list()
+        campo_busca = request.form['campo']
+        try:
+            campo_id = int(campo_busca)
+            for usuario in usuarios_teste:
+                if campo_id == usuario.id:
+                    usuarios.append(usuario)
+                elif unidecode(campo_busca).upper() == unidecode(usuario.nome).upper():
+                    usuario.append(usuario)
+                elif unidecode(campo_busca).upper() == unidecode(usuario.username).upper():
+                    usuarios.append(usuario)
+        except:
+            for usuario in usuarios_teste:
+                if unidecode(campo_busca).upper() == unidecode(usuario.nome).upper():
+                    usuarios.append(usuario)
+                elif unidecode(campo_busca).upper() == unidecode(usuario.username).upper():
+                    usuarios.append(usuario)
+        if len(usuarios) == 0:
+                flash(u'Nenhum item corresponde ao valor pesquisado!', category='warning')
+        return(render_template('usuarios.html', usuarios=usuarios, form=form, action=url_for('listar_usuarios')))
     usuarios = Usuario.query.order_by(Usuario.nome).all()
-    return(render_template('usuarios.html', usuarios=usuarios))
+    return(render_template('usuarios.html', usuarios=usuarios, form=form, action=url_for('listar_usuarios')))
 
-@app.route('/livro/emprestimo', methods=['POST','GET'])
+@app.route('/usuario/remover/<id_usuario>', methods=['POST','GET'])
+def remover_usuario(id_usuario):
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    if session['admin'] == True:
+        id_usuario = int(id_usuario)
+        if id_usuario == int(session['usuario']):
+            flash(u'O usuário logado na sessão não pode se remover!', category='warning')
+            return(redirect(url_for('listar_usuarios')))
+        usuario = Usuario.query.get(id_usuario)
+        db.session.delete(usuario)
+        db.session.commit()
+        flash(u'Usuário removido com sucesso!', category='info')
+        return (redirect(url_for('listar_usuarios')))
+    flash(u'Apenas administradores podem remover usuários!', category='warning')
+    return (redirect(url_for('root')))
+    
+
+@app.route('/emprestimo', methods=['POST','GET'])
 def emprestar_livro():
     if session.get('autenticado',False)==False:
         flash(u'Login necessário!', category='warning')
@@ -128,6 +218,9 @@ def emprestar_livro():
                                     id_livro=id_livro,
                                     data_emprestimo=datetime.datetime.now())
         livroAlterado = Livro.query.get(id_livro)
+        fichaIncremento = Ficha.query.get(id_ficha)
+        fichaIncremento.ativo = True
+        fichaIncremento.qtdLivros += 1
         livroAlterado.disponivel = False
         db.session.add(novoEmprestimo)
         db.session.commit()
@@ -135,13 +228,38 @@ def emprestar_livro():
         return(redirect(url_for('root')))
     return(render_template('form.html',form=form,action=url_for('emprestar_livro')))
 
-@app.route('/livro/emprestimo/listar')
+@app.route('/emprestimo/listar', methods=['POST','GET'])
 def listar_emprestimos():
     if session.get('autenticado',False)==False:
         flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
+    form = BuscaForm()
+    if form.validate_on_submit():
+        emprestimos_teste = Emprestimo.query.order_by(Emprestimo.data_emprestimo.desc()).all()
+        emprestimos = list()
+        campo_busca = request.form['campo']
+        try:
+            campo_id = int(campo_busca)
+            for emprestimo in emprestimos_teste:
+                if campo_id == emprestimo.id:
+                    emprestimos.append(emprestimo)
+                elif unidecode(campo_busca).upper() == unidecode(emprestimo.usuario.nome).upper():
+                    emprestimos.append(emprestimo)
+                elif unidecode(campo_busca).upper() == unidecode(emprestimo.ficha.nome).upper():
+                    emprestimos.append(emprestimo)
+                elif unidecode(campo_busca).upper() == unidecode(emprestimo.livro.titulo).upper():
+                    emprestimos.append(emprestimo)
+        except:
+            for emprestimo in emprestimos_teste:
+                if unidecode(campo_busca).upper() == unidecode(emprestimo.usuario.nome).upper():
+                    emprestimos.append(emprestimo)
+                elif unidecode(campo_busca).upper() == unidecode(emprestimo.ficha.nome).upper():
+                    emprestimos.append(emprestimo)
+                elif unidecode(campo_busca).upper() == unidecode(emprestimo.livro.titulo).upper():
+                    emprestimos.append(emprestimo)
+        return(render_template('emprestimos.html', emprestimos=emprestimos, form=form, action=url_for('listar_emprestimos')))
     emprestimos = Emprestimo.query.order_by(Emprestimo.data_emprestimo.desc()).all()
-    return(render_template('emprestimos.html', emprestimos=emprestimos))
+    return(render_template('emprestimos.html', emprestimos=emprestimos, form=form, action=url_for('listar_emprestimos')))
 
 @app.route('/livro/devolver/<id_emprestimo>', methods=['POST','GET'])
 def devolver_emprestimo(id_emprestimo):
@@ -152,15 +270,20 @@ def devolver_emprestimo(id_emprestimo):
     emprestimo = Emprestimo.query.get(id_emprestimo)
     emprestimo.data_devolucao = datetime.datetime.now()
     livro = Livro.query.get(emprestimo.id_livro)
+    ficha = Ficha.query.get(emprestimo.id_ficha)
     if livro.disponivel == True:
         flash(u'O livro já foi devolvido!', category='warning')
     else:
+        ficha.qtdLivros -= 1
+        ficha.totalLivros += 1
+        if ficha.qtdLivros == 0:
+            ficha.ativo = False
         livro.disponivel = True
+        db.session.commit()
         flash(u'Livro devolvido com sucesso!', category='info')
-    db.session.commit()
-    return (redirect(url_for('root')))
+    return (redirect(url_for('listar_emprestimos')))
 
-@app.route('/livro/remover/<id_emprestimo>', methods=['POST','GET'])
+@app.route('/emprestimo/remover/<id_emprestimo>', methods=['POST','GET'])
 def remover_emprestimo(id_emprestimo):
     if session.get('autenticado',False)==False:
         flash(u'Login necessário!', category='warning')
@@ -169,10 +292,13 @@ def remover_emprestimo(id_emprestimo):
     emprestimo = Emprestimo.query.get(id_emprestimo)
     id_livro = emprestimo.id_livro
     livro = Livro.query.get(id_livro)
-    livro.disponivel = True
-    db.session.delete(emprestimo)
-    db.session.commit()
-    return (redirect(url_for('root')))
+    if livro.disponivel == True:
+        db.session.delete(emprestimo)
+        db.session.commit()
+        flash(u'Linha de empréstimo removida com sucesso!', category='info')
+    else:
+        flash(u'O livro precisa ser devolvido antes da remoção do empréstimo!', category='warning')
+    return (redirect(url_for('listar_emprestimos')))
 
 @app.route('/ficha/cadastrar', methods=['POST','GET'])
 def cadastrar_ficha():
@@ -186,7 +312,10 @@ def cadastrar_ficha():
         email = request.form['email']
         novaFicha = Ficha(nome=nome,
                             cpf=cpf,
-                            email=email)
+                            email=email,
+                            ativo=False,
+                            qtdLivros = 0, 
+                            totalLivros=0)
         db.session.add(novaFicha)
         db.session.commit()
         flash(u'Ficha cadastrada com sucesso!', category='info')
@@ -198,7 +327,7 @@ def listar_fichas():
     if session.get('autenticado',False)==False:
         flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
-    form = BuscaFichaForm()
+    form = BuscaForm()
     if form.validate_on_submit():
         fichas_teste = Ficha.query.order_by(Ficha.nome).all()
         fichas = list()
@@ -223,6 +352,24 @@ def listar_fichas():
         return(render_template('fichas.html', fichas=fichas, form=form, action=url_for('listar_fichas')))
     fichas = Ficha.query.order_by(Ficha.nome).all()
     return(render_template('fichas.html', fichas=fichas, form=form, action=url_for('listar_fichas')))
+
+@app.route('/ficha/remover/<id_ficha>', methods=['POST','GET'])
+def remover_ficha(id_ficha):
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    if session['admin'] == True:
+        id_ficha = int(id_ficha)
+        ficha = Ficha.query.get(id_ficha)
+        if ficha.ativo == False:
+            db.session.delete(ficha)
+            db.session.commit()
+            flash(u'Ficha removida com sucesso!', category='info')
+            return (redirect(url_for('listar_fichas')))
+        flash(u'O leitor possui livros não devolvidos!', category='warning')
+        return (redirect(url_for('listar_fichas')))
+    flash(u'Apenas administradores podem remover fichas!', category='warning')
+    return (redirect(url_for('root')))
 
 @app.route('/usuario/login', methods=['POST','GET'])
 def login():

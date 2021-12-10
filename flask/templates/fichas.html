@@ -14,26 +14,34 @@
             <a class="btn btn-secondary btn-sm" href="{{url_for('listar_fichas')}}" role="button">LIMPAR</a>
         </div>
     </form>
-    <table class=" table table-light border rounded-3" style="overflow: hidden;">
-        <thead>
-        <tr class="table-secondary">
-            <th scope="col">ID</th>
-            <th scope="col">Nome</th>
-            <th scope="col">CPF</th>
-            <th scope="col">E-mail</th>
-        </tr>
-        </thead>
-        <tbody>
-            {% for ficha in fichas %}
-                <tr>
-                    <th scope="row">{{ficha.id}}</th>
-                    <td>{{ficha.nome}}</td>
-                    <td>{{ficha.cpf}}</td>
-                    <td>{{ficha.email}}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div style="max-height: 400px; overflow-y: auto;">
+        <table class=" table table-light border rounded-3" style="overflow: hidden;">
+            <thead>
+            <tr class="table-secondary">
+                <th scope="col">ID</th>
+                <th scope="col">Nome</th>
+                <th scope="col">CPF</th>
+                <th scope="col">E-mail</th>
+                <th scope="col">Livros em Posse</th>
+                <th scope="col">Total de Livros Lidos</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for ficha in fichas %}
+                    <tr>
+                        <th scope="row">{{ficha.id}}</th>
+                        <td>{{ficha.nome}}</td>
+                        <td>{{ficha.cpf}}</td>
+                        <td>{{ficha.email}}</td>
+                        <td>{{ficha.qtdLivros}}</td>
+                        <td>{{ficha.totalLivros}}</td>
+                        <td class="text-center"><a class="btn btn-danger btn-sm" href="{{url_for('remover_ficha', id_ficha=ficha.id)}}" role="button">REMOVER</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <hr>
     <div class="row text-center">
