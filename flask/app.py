@@ -7,6 +7,7 @@ from flask_bootstrap import Bootstrap
 from flask_wtf.csrf import CSRFProtect
 from database import db
 from flask_session import Session
+from unidecode import unidecode
 import logging
 import os
 import datetime
@@ -14,6 +15,7 @@ import hashlib
 
 from formLogin import LoginForm
 from formFicha import FichaForm
+from formBuscaFicha import BuscaFichaForm
 from formEmprestimo import EmprestimoForm
 from formUsuario import UsuarioForm
 from formLivro import LivroForm
@@ -190,15 +192,38 @@ def cadastrar_ficha():
         return(redirect(url_for('root')))
     return (render_template('form.html', form=form, action=url_for('cadastrar_ficha')))
 
-@app.route('/ficha/listar')
+@app.route('/ficha/listar', methods=['POST','GET'])
 def listar_fichas():
     if session.get('autenticado',False)==False:
         flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
+    form = BuscaFichaForm()
+    if form.validate_on_submit():
+        fichas_teste = Ficha.query.order_by(Ficha.nome).all()
+        fichas = list()
+        campo_busca = request.form['campo']
+        try:
+            campo_id = int(campo_busca)
+            for ficha in fichas_teste:
+                if campo_id == ficha.id:
+                    fichas.append(ficha)
+                elif unidecode(campo_busca).upper() == unidecode(ficha.nome).upper():
+                    fichas.append(ficha)
+                elif unidecode(campo_busca).upper() == unidecode(ficha.cpf).upper():
+                    fichas.append(ficha)
+        except:
+            for ficha in fichas_teste:
+                if unidecode(campo_busca).upper() == unidecode(ficha.nome).upper():
+                    fichas.append(ficha)
+                elif unidecode(campo_busca).upper() == unidecode(ficha.cpf).upper():
+                    fichas.append(ficha)
+        if len(fichas) == 0:
+            flash(u'Nenhum item corresponde ao valor pesquisa!', category='warning')
+        return(render_template('fichas.html', fichas=fichas, form=form, action=url_for('listar_fichas')))
     fichas = Ficha.query.order_by(Ficha.nome).all()
-    return(render_template('fichas.html', fichas=fichas))
+    return(render_template('fichas.html', fichas=fichas, form=form, action=url_for('listar_fichas')))
 
-@app.route('/usuario/login',methods=['POST','GET'])
+@app.route('/usuario/login', methods=['POST','GET'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
