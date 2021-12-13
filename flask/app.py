@@ -217,6 +217,7 @@ def emprestar_livro():
                                     id_ficha=id_ficha,
                                     id_livro=id_livro,
                                     data_emprestimo=datetime.datetime.now())
+        app.logger.debug(None)
         livroAlterado = Livro.query.get(id_livro)
         fichaIncremento = Ficha.query.get(id_ficha)
         fichaIncremento.ativo = True
