@@ -215,9 +215,7 @@ def emprestar_livro():
         id_livro = int(request.form['livro'])
         novoEmprestimo = Emprestimo(id_usuario=int(session['usuario']),
                                     id_ficha=id_ficha,
-                                    id_livro=id_livro,
-                                    data_emprestimo=datetime.datetime.now())
-        app.logger.debug(None)
+                                    id_livro=id_livro,)
         livroAlterado = Livro.query.get(id_livro)
         fichaIncremento = Ficha.query.get(id_ficha)
         fichaIncremento.ativo = True
@@ -225,6 +223,7 @@ def emprestar_livro():
         livroAlterado.disponivel = False
         db.session.add(novoEmprestimo)
         db.session.commit()
+        app.logger.debug('Novo emprestimo')
         flash(u'Empréstimo realizado com sucesso!', category='info')
         return(redirect(url_for('root')))
     return(render_template('form.html',form=form,action=url_for('emprestar_livro')))
