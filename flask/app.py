@@ -35,6 +35,7 @@ logging.basicConfig(filename='/flask/app.log', filemode='w', format='%(asctime)s
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['WTF_CSRF_SSL_STRICT'] = False
+app.config['WTF_CSRF_ENABLED'] = True
 Session(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + CSV_DIR + 'bd.sqlite3'
