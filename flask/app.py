@@ -39,6 +39,7 @@ Session(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + CSV_DIR + 'bd.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 db.init_app(app)
 
 @app.before_first_request
@@ -66,7 +67,7 @@ def cadastrar_livro():
         db.session.commit()
         flash(u'Livro cadastrado com sucesso!', category='info')
         return(redirect(url_for('root')))
-    return (render_template('form.html', form=form, action=url_for('cadastrar_livro')))
+    return (render_template('formCadastroLivro.html', form=form, action=url_for('cadastrar_livro')))
 
 @app.route('/livro/listar', methods=['POST','GET'])
 def listar_livros():
@@ -148,7 +149,7 @@ def cadastrar_usuario():
         db.session.commit()
         flash(u'Usuário cadastrado com sucesso!', category='info')
         return(redirect(url_for('root')))
-    return (render_template('form.html', form=form, action=url_for('cadastrar_usuario')))
+    return (render_template('formCadastroUsuario.html', form=form, action=url_for('cadastrar_usuario')))
 
 @app.route('/usuario/listar', methods=['POST','GET'])
 def listar_usuarios():
@@ -226,7 +227,7 @@ def emprestar_livro():
         app.logger.debug('Novo emprestimo')
         flash(u'Empréstimo realizado com sucesso!', category='info')
         return(redirect(url_for('root')))
-    return(render_template('form.html',form=form,action=url_for('emprestar_livro')))
+    return(render_template('formEmprestimo.html',form=form,action=url_for('emprestar_livro')))
 
 @app.route('/emprestimo/listar', methods=['POST','GET'])
 def listar_emprestimos():
@@ -320,7 +321,7 @@ def cadastrar_ficha():
         db.session.commit()
         flash(u'Ficha cadastrada com sucesso!', category='info')
         return(redirect(url_for('root')))
-    return (render_template('form.html', form=form, action=url_for('cadastrar_ficha')))
+    return (render_template('formCadastroLeitor.html', form=form, action=url_for('cadastrar_ficha')))
 
 @app.route('/ficha/listar', methods=['POST','GET'])
 def listar_fichas():

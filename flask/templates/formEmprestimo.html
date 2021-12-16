@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from 'bootstrap/form.html' import render_field %}
+{% block conteudo %}
+    <div class="container-fluid border rounded-3 mx-auto mt-3 mb-3 pt-3" style="width: 75%; background-color: rgb(202, 202, 202);">
+        <form method="post">
+            <div class="mx-auto mt-3 mb-4" style="width: 50%;">
+                <div class="row-md-auto mx-auto">
+                    <div class="col-md-auto text-center">
+                        <img src="{{url_for('static', filename='Emprestimo.png')}}" class="" style="width: 80px; height: 80px;">
+                    </div>
+                    <div class="col-md-auto text-center my-auto">
+                        <h3>Formulário de empréstimo de Livro</h3>
+                    </div>
+                </div>
+            </div>
+            {{ form.csrf_token() }}
+            {{ render_field(form.ficha) }}
+            {{ render_field(form.livro) }}
+            <div class="text-center mt-3 mb-2">
+                {{ render_field(form.enviar, button_style="primary", button_size="md") }}
+            </div>
+            <div class="text-center mb-3">
+                <a class="btn btn-secondary btn-sm" href="{{url_for('root')}}">VOLTAR</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
