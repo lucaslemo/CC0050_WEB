@@ -16,5 +16,6 @@ RUN pip install pyTelegramBotAPI
 RUN pip install semantic_version
 RUN pip install Flask-Session
 RUN pip install --upgrade wtforms==2.3.3
+RUN pip install pytest
 EXPOSE 80
 CMD python /flask/app.py
