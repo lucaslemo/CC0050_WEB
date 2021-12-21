@@ -13,7 +13,9 @@
                     </div>
                 </div>
             </div>
-            {{ form.csrf_token() }}
+            {% if csrf_enabled == True %}
+                {{ form.csrf_token() }}
+            {% endif %}
             {{ render_field(form.titulo) }}
             {{ render_field(form.autor) }}
             {{ render_field(form.genero) }}

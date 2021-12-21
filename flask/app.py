@@ -68,7 +68,10 @@ def cadastrar_livro():
         db.session.commit()
         flash(u'Livro cadastrado com sucesso!', category='info')
         return(redirect(url_for('root')))
-    return (render_template('formCadastroLivro.html', form=form, action=url_for('cadastrar_livro')))
+    return (render_template('formCadastroLivro.html',
+                                csrf_enabled=app.config['WTF_CSRF_ENABLED'],
+                                form=form, 
+                                action=url_for('cadastrar_livro')))
 
 @app.route('/livro/listar', methods=['POST','GET'])
 def listar_livros():
@@ -150,7 +153,10 @@ def cadastrar_usuario():
         db.session.commit()
         flash(u'Usuário cadastrado com sucesso!', category='info')
         return(redirect(url_for('root')))
-    return (render_template('formCadastroUsuario.html', form=form, action=url_for('cadastrar_usuario')))
+    return (render_template('formCadastroUsuario.html',
+                                csrf_enabled=app.config['WTF_CSRF_ENABLED'],
+                                form=form,
+                                action=url_for('cadastrar_usuario')))
 
 @app.route('/usuario/listar', methods=['POST','GET'])
 def listar_usuarios():
@@ -229,7 +235,10 @@ def emprestar_livro():
         app.logger.debug('Novo emprestimo')
         flash(u'Empréstimo realizado com sucesso!', category='info')
         return(redirect(url_for('root')))
-    return(render_template('formEmprestimo.html',form=form,action=url_for('emprestar_livro')))
+    return(render_template('formEmprestimo.html',
+                                csrf_enabled=app.config['WTF_CSRF_ENABLED'],
+                                form=form,
+                                action=url_for('emprestar_livro')))
 
 @app.route('/emprestimo/listar', methods=['POST','GET'])
 def listar_emprestimos():
@@ -323,7 +332,10 @@ def cadastrar_ficha():
         db.session.commit()
         flash(u'Ficha cadastrada com sucesso!', category='info')
         return(redirect(url_for('root')))
-    return (render_template('formCadastroLeitor.html', form=form, action=url_for('cadastrar_ficha')))
+    return (render_template('formCadastroLeitor.html',
+                                csrf_enabled=app.config['WTF_CSRF_ENABLED'],
+                                form=form,
+                                action=url_for('cadastrar_ficha')))
 
 @app.route('/ficha/listar', methods=['POST','GET'])
 def listar_fichas():
@@ -392,7 +404,10 @@ def login():
         else:
             flash(u'Usuário ou senha não conferem!', category='warning')
             return(redirect(url_for('login')))
-    return (render_template('formLogin.html', form=form, action=url_for('login')))
+    return (render_template('formLogin.html', 
+                            csrf_enabled=app.config['WTF_CSRF_ENABLED'], 
+                            form=form, 
+                            action=url_for('login')))
 
 @app.route('/usuario/logout',methods=['POST','GET'])
 def logout():

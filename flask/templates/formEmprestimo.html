@@ -13,7 +13,9 @@
                     </div>
                 </div>
             </div>
-            {{ form.csrf_token() }}
+            {% if csrf_enabled == True %}
+                {{ form.csrf_token() }}
+            {% endif %}
             {{ render_field(form.ficha) }}
             {{ render_field(form.livro) }}
             <div class="text-center mt-3 mb-2">

@@ -56,7 +56,9 @@
                     <img src="{{url_for('static', filename='User_login.png')}}" class="mb-2" style="width: 80px; height: 80px;">
                     <h3>Login de Usuário</h3>
                 </div>
-                {{ form.csrf_token() }}
+                {% if csrf_enabled == True %}
+                    {{ form.csrf_token() }}
+                {% endif %}
                 <div class="mx-auto" style="width: 300px;">
                     <div class="row mx-0">
                         <div class="col-md-auto px-1 pt-4">
