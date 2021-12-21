@@ -138,21 +138,25 @@ def cadastrar_usuario():
         senha = request.form['senha']
         senhahash = hashlib.sha1(senha.encode('utf8')).hexdigest()
         admin = False
-        try:
-            if request.form['admin'] == 'y':
-                admin = True
-        except:
-            admin = False
-        novoUsuario = Usuario(nome=nome,
-                                username=username,
-                                email=email,
-                                telefone=telefone,
-                                senha=senhahash,
-                                admin=admin)
-        db.session.add(novoUsuario)
-        db.session.commit()
-        flash(u'Usuário cadastrado com sucesso!', category='info')
-        return(redirect(url_for('root')))
+        linha = Usuario.query.filter((Usuario.username==username) | (Usuario.email==email)).all()
+        if len(linha) == 0:
+            try:
+                if request.form['admin'] == 'y':
+                    admin = True
+            except:
+                admin = False
+            novoUsuario = Usuario(nome=nome,
+                                    username=username,
+                                    email=email,
+                                    telefone=telefone,
+                                    senha=senhahash,
+                                    admin=admin)
+            db.session.add(novoUsuario)
+            db.session.commit()
+            flash(u'Usuário cadastrado com sucesso!', category='info')
+            return(redirect(url_for('root')))
+        else:
+            flash(u'Já existe um usuário cadastrado com esse Nome de usuário ou E-mail', category='warning')
     return (render_template('formCadastroUsuario.html',
                                 csrf_enabled=app.config['WTF_CSRF_ENABLED'],
                                 form=form,
@@ -322,16 +326,21 @@ def cadastrar_ficha():
         nome = request.form['nome']
         cpf = request.form['cpf']
         email = request.form['email']
-        novaFicha = Ficha(nome=nome,
-                            cpf=cpf,
-                            email=email,
-                            ativo=False,
-                            qtdLivros = 0, 
-                            totalLivros=0)
-        db.session.add(novaFicha)
-        db.session.commit()
-        flash(u'Ficha cadastrada com sucesso!', category='info')
-        return(redirect(url_for('root')))
+        linha = Ficha.query.filter((Ficha.cpf==cpf) | (Ficha.email==email)).all()
+        if len(linha) == 0:
+            novaFicha = Ficha(nome=nome,
+                                cpf=cpf,
+                                email=email,
+                                ativo=False,
+                                qtdLivros=0, 
+                                totalLivros=0)
+            
+            db.session.add(novaFicha)
+            db.session.commit()
+            flash(u'Ficha cadastrada com sucesso!', category='info')
+            return(redirect(url_for('root')))
+        else:
+            flash(u'Já existe uma ficha cadastrada com esse E-mail ou CPF', category='warning')
     return (render_template('formCadastroLeitor.html',
                                 csrf_enabled=app.config['WTF_CSRF_ENABLED'],
                                 form=form,
