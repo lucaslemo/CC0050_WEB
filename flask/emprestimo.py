@@ -8,3 +8,12 @@ class Emprestimo(db.Model):
     id_ficha = db.Column(db.Integer,db.ForeignKey('ficha.id'))
     data_emprestimo = db.Column(db.DateTime, unique=False, nullable=False)
     data_devolucao = db.Column(db.DateTime, unique=False, nullable=True)
+
+    def asdict(self):
+      resultado = dict()
+      for c in self.__table__.columns:
+        if c.name == "data_emprestimo" or c.name == "data_devolucao":
+          resultado[c.name]= getattr(self, c.name).strftime('%d/%m/%Y %H:%M')
+        else:
+          resultado[c.name]= getattr(self, c.name)
+      return resultado

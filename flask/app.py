@@ -7,11 +7,13 @@ from flask_bootstrap import Bootstrap
 from flask_wtf.csrf import CSRFProtect
 from database import db
 from flask_session import Session
+from flask_json import FlaskJSON, JsonError, json_response, as_json
 from unidecode import unidecode
 import logging
 import os
 import datetime
 import hashlib
+import json
 
 from formLogin import LoginForm
 from formFicha import FichaForm
@@ -37,6 +39,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 app.config['WTF_CSRF_SSL_STRICT'] = False
 app.config['WTF_CSRF_ENABLED'] = True
 Session(app)
+FlaskJSON(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + CSV_DIR + 'bd.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -127,6 +130,15 @@ def remover_livro(id_livro):
     flash(u'Apenas administradores podem remover livros!', category='warning')
     return (redirect(url_for('root')))
 
+@app.route('/livro/listar/json')
+def listar_livros_json():
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    livros = Livro.query.order_by(Livro.id).all()
+    resultado = json.dumps([ row.asdict() for row in livros ])
+    return(resultado)
+
 @app.route('/usuario/cadastrar', methods=['POST','GET'])
 def cadastrar_usuario():
     form = UsuarioForm()
@@ -210,7 +222,15 @@ def remover_usuario(id_usuario):
         return (redirect(url_for('listar_usuarios')))
     flash(u'Apenas administradores podem remover usuários!', category='warning')
     return (redirect(url_for('root')))
-    
+
+@app.route('/usuario/listar/json')
+def listar_usuarios_json():
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    usuarios = Usuario.query.order_by(Usuario.id).all()
+    resultado = json.dumps([ row.asdict() for row in usuarios ])
+    return(resultado) 
 
 @app.route('/emprestimo', methods=['POST','GET'])
 def emprestar_livro():
@@ -316,6 +336,15 @@ def remover_emprestimo(id_emprestimo):
         flash(u'O livro precisa ser devolvido antes da remoção do empréstimo!', category='warning')
     return (redirect(url_for('listar_emprestimos')))
 
+@app.route('/emprestimo/listar/json')
+def listar_emprestimos_json():
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    emprestimos = Emprestimo.query.order_by(Emprestimo.id).all()
+    resultado = json.dumps([ row.asdict() for row in emprestimos ])
+    return(resultado)
+
 @app.route('/ficha/cadastrar', methods=['POST','GET'])
 def cadastrar_ficha():
     if session.get('autenticado',False)==False:
@@ -394,6 +423,15 @@ def remover_ficha(id_ficha):
         return (redirect(url_for('listar_fichas')))
     flash(u'Apenas administradores podem remover fichas!', category='warning')
     return (redirect(url_for('root')))
+
+@app.route('/ficha/listar/json')
+def listar_fichas_json():
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    fichas = Ficha.query.order_by(Ficha.id).all()
+    resultado = json.dumps([ row.asdict() for row in fichas ])
+    return(resultado)
 
 @app.route('/usuario/login', methods=['POST','GET'])
 def login():

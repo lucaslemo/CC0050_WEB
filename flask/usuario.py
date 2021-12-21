@@ -9,3 +9,6 @@ class Usuario(db.Model):
     senha = db.Column(db.String(80), unique=False, nullable=False)
     admin = db.Column(db.Boolean(), default=False)
     emprestimo = db.relationship('Emprestimo', backref='usuario', lazy=True)
+
+    def asdict(self):
+      return {c.name: getattr(self, c.name) for c in self.__table__.columns}

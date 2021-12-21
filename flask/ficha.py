@@ -9,3 +9,6 @@ class Ficha(db.Model):
     qtdLivros = db.Column(db.Integer, unique=False, nullable=False)
     totalLivros = db.Column(db.Integer, unique=False, nullable=False)
     emprestimo = db.relationship('Emprestimo', backref='ficha', lazy=True)
+
+    def asdict(self):
+      return {c.name: getattr(self, c.name) for c in self.__table__.columns}

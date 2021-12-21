@@ -69,7 +69,23 @@ def test_7_emprestimos_listar(client):
     assert b'Dono da Ficha' in rv.data
     assert b'Data do Empr' in rv.data
 
-@pytest.mark.usefixtures('preparacao')
+def test_8_livro_json(client):
+    rv = client.get('/livro/listar/json')
+    assert 500 != rv.status_code
+
+def test_9_usuario_json(client):
+    rv = client.get('/usuario/listar/json')
+    assert 500 != rv.status_code
+
+def test_10_emprestimo_json(client):
+    rv = client.get('/emprestimo/listar/json')
+    assert 500 != rv.status_code
+
+def test_11_ficha_json(client):
+    rv = client.get('/ficha/listar/json')
+    assert 500 != rv.status_code
+
+"""@pytest.mark.usefixtures('preparacao')
 def test_8_livro_cadastrar(client):
     data = dict(titulo='Livro Teste',
                 autor='Autor Teste',
@@ -107,7 +123,7 @@ def test_11_ficha_cadastrar_repetido_email(client):
     rv = client.post('/ficha/cadastrar',
                         data=data,
                         follow_redirects=True)
-    assert b'ficha cadastrada com esse E-mail ou CPF' in rv.data
+    assert b'ficha cadastrada com esse E-mail ou CPF' in rv.data"""
 
 def test_99_logout(client):
     rv = logout(client)
