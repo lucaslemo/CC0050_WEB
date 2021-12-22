@@ -8,6 +8,7 @@ from flask_wtf.csrf import CSRFProtect
 from database import db
 from flask_session import Session
 from flask_json import FlaskJSON, JsonError, json_response, as_json
+from sqlalchemy import func
 from unidecode import unidecode
 import logging
 import os
@@ -53,7 +54,11 @@ def inicializar_bd():
 @app.route('/')
 def root():
     return (render_template('index.html'))
-        
+
+'''
+    Rotas para os Livros
+'''
+
 @app.route('/livro/cadastrar', methods=['POST','GET'])
 def cadastrar_livro():
     if session.get('autenticado',False)==False:
@@ -138,6 +143,21 @@ def listar_livros_json():
     livros = Livro.query.order_by(Livro.id).all()
     resultado = json.dumps([ row.asdict() for row in livros ])
     return(resultado)
+
+@app.route('/livro/<titulo>')
+def buscar_livros(titulo):
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    lista_livros = Livro.query.filter(func.upper(Livro.titulo)==titulo.upper()).all()
+    if len(lista_livros) > 0:
+        resultado = json.dumps([ row.asdict() for row in lista_livros ])
+        return resultado
+    return json.dumps([ {"id": 0, "titulo" : "Not Found"} ])
+
+'''
+    Rotas para os Usuários
+'''
 
 @app.route('/usuario/cadastrar', methods=['POST','GET'])
 def cadastrar_usuario():
@@ -231,6 +251,21 @@ def listar_usuarios_json():
     usuarios = Usuario.query.order_by(Usuario.id).all()
     resultado = json.dumps([ row.asdict() for row in usuarios ])
     return(resultado) 
+
+@app.route('/usuario/<username>')
+def buscar_usuario(username):
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    lista_usuarios = Usuario.query.filter(func.upper(Usuario.username)==username.upper()).all()
+    if len(lista_usuarios) > 0:
+        resultado = json.dumps([ row.asdict() for row in lista_usuarios ])
+        return resultado
+    return json.dumps([ {"id" : 0, "username" : "Not Found"} ])
+
+'''
+    Rotas para os Empréstimos
+'''
 
 @app.route('/emprestimo', methods=['POST','GET'])
 def emprestar_livro():
@@ -345,6 +380,22 @@ def listar_emprestimos_json():
     resultado = json.dumps([ row.asdict() for row in emprestimos ])
     return(resultado)
 
+@app.route('/emprestimo/<id_ficha>/<id_livro>')
+def buscar_emprestimo(id_ficha, id_livro):
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    lista_emprestimos = Emprestimo.query.filter(Emprestimo.id_ficha==id_ficha,
+                                                Emprestimo.id_livro==id_livro).all()
+    if len(lista_emprestimos) > 0:
+        resultado = json.dumps([ row.asdict() for row in lista_emprestimos ])
+        return resultado
+    return json.dumps([ {"id" : 0, "id_ficha" : 0, "id_livro" : 0} ])
+
+'''
+    Rotas para as Fichas
+'''
+
 @app.route('/ficha/cadastrar', methods=['POST','GET'])
 def cadastrar_ficha():
     if session.get('autenticado',False)==False:
@@ -433,6 +484,21 @@ def listar_fichas_json():
     resultado = json.dumps([ row.asdict() for row in fichas ])
     return(resultado)
 
+@app.route('/ficha/<cpf>')
+def buscar_ficha(cpf):
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    lista_fichas = Ficha.query.filter(func.upper(Ficha.cpf)==cpf.upper()).all()
+    if len(lista_fichas) > 0:
+        resultado = json.dumps([ row.asdict() for row in lista_fichas ])
+        return resultado
+    return json.dumps([ {"id" : 0, "cpf" : "Not Found"} ])
+
+'''
+    Rotas para Login/Logout
+'''
+
 @app.route('/usuario/login', methods=['POST','GET'])
 def login():
     form = LoginForm()
@@ -456,7 +522,7 @@ def login():
                             form=form, 
                             action=url_for('login')))
 
-@app.route('/usuario/logout',methods=['POST','GET'])
+@app.route('/usuario/logout')
 def logout():
     session.clear()
     flash(u'Sessão encerrada com sucesso!', category='info')
