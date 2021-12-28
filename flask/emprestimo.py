@@ -12,7 +12,7 @@ class Emprestimo(db.Model):
     def asdict(self):
       resultado = dict()
       for c in self.__table__.columns:
-        if c.name == "data_emprestimo" or c.name == "data_devolucao":
+        if getattr(self, c.name) is not None and (c.name == "data_emprestimo" or c.name == "data_devolucao"):
           resultado[c.name]= getattr(self, c.name).strftime('%d/%m/%Y %H:%M')
         else:
           resultado[c.name]= getattr(self, c.name)
