@@ -33,7 +33,7 @@
                 {% for emprestimo in emprestimos %}
                     <tr>
                         <th scope="row">{{emprestimo.id}}</th>
-                        {% if emprestimo.usuario.nome is not none %}
+                        {% if emprestimo.usuario is not none %}
                             <td>{{emprestimo.usuario.nome}}</td>
                         {% else %}
                             <td>Sem dados</td>
@@ -43,7 +43,7 @@
                         {% else %}
                             <td>Sem dados</td>
                         {% endif %}
-                        {% if emprestimo.livro.titulo is not none %}
+                        {% if emprestimo.livro is not none %}
                             <td>{{emprestimo.livro.titulo}}</td>
                         {% else %}
                             <td>Sem dados</td>
