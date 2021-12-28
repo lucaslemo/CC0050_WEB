@@ -161,69 +161,78 @@ def buscar_livros(titulo):
 
 @app.route('/usuario/cadastrar', methods=['POST','GET'])
 def cadastrar_usuario():
-    form = UsuarioForm()
-    if form.validate_on_submit():
-        nome = request.form['nome']
-        username = request.form['username']
-        email = request.form['email']
-        telefone = request.form['telefone']
-        senha = request.form['senha']
-        senhahash = hashlib.sha1(senha.encode('utf8')).hexdigest()
-        admin = False
-        linha = Usuario.query.filter((Usuario.username==username) | (Usuario.email==email)).all()
-        if len(linha) == 0:
-            try:
-                if request.form['admin'] == 'y':
-                    admin = True
-            except:
-                admin = False
-            novoUsuario = Usuario(nome=nome,
-                                    username=username,
-                                    email=email,
-                                    telefone=telefone,
-                                    senha=senhahash,
-                                    admin=admin)
-            db.session.add(novoUsuario)
-            db.session.commit()
-            flash(u'Usuário cadastrado com sucesso!', category='info')
-            return(redirect(url_for('root')))
-        else:
-            flash(u'Já existe um usuário cadastrado com esse Nome de usuário ou E-mail', category='warning')
-    return (render_template('formCadastroUsuario.html',
-                                csrf_enabled=app.config['WTF_CSRF_ENABLED'],
-                                form=form,
-                                action=url_for('cadastrar_usuario')))
+    if session.get('autenticado',False)==False:
+        flash(u'Login necessário!', category='warning')
+        return(redirect(url_for('login')))
+    if session['admin'] == True:
+        form = UsuarioForm()
+        if form.validate_on_submit():
+            nome = request.form['nome']
+            username = request.form['username']
+            email = request.form['email']
+            telefone = request.form['telefone']
+            senha = request.form['senha']
+            senhahash = hashlib.sha1(senha.encode('utf8')).hexdigest()
+            admin = False
+            linha = Usuario.query.filter((Usuario.username==username) | (Usuario.email==email)).all()
+            if len(linha) == 0:
+                try:
+                    if request.form['admin'] == 'y':
+                        admin = True
+                except:
+                    admin = False
+                novoUsuario = Usuario(nome=nome,
+                                        username=username,
+                                        email=email,
+                                        telefone=telefone,
+                                        senha=senhahash,
+                                        admin=admin)
+                db.session.add(novoUsuario)
+                db.session.commit()
+                flash(u'Usuário cadastrado com sucesso!', category='info')
+                return(redirect(url_for('root')))
+            else:
+                flash(u'Já existe um usuário cadastrado com esse Nome de usuário ou E-mail', category='warning')
+        return (render_template('formCadastroUsuario.html',
+                                    csrf_enabled=app.config['WTF_CSRF_ENABLED'],
+                                    form=form,
+                                    action=url_for('cadastrar_usuario')))
+    flash(u'Apenas administradores podem cadastrar novos usuários!', category='warning')
+    return (redirect(url_for('root')))
 
 @app.route('/usuario/listar', methods=['POST','GET'])
 def listar_usuarios():
     if session.get('autenticado',False)==False:
         flash(u'Login necessário!', category='warning')
         return(redirect(url_for('login')))
-    form = BuscaForm()
-    if form.validate_on_submit():
-        usuarios_teste = Usuario.query.order_by(Usuario.nome).all()
-        usuarios = list()
-        campo_busca = request.form['campo']
-        try:
-            campo_id = int(campo_busca)
-            for usuario in usuarios_teste:
-                if campo_id == usuario.id:
-                    usuarios.append(usuario)
-                elif unidecode(campo_busca).upper() == unidecode(usuario.nome).upper():
-                    usuario.append(usuario)
-                elif unidecode(campo_busca).upper() == unidecode(usuario.username).upper():
-                    usuarios.append(usuario)
-        except:
-            for usuario in usuarios_teste:
-                if unidecode(campo_busca).upper() == unidecode(usuario.nome).upper():
-                    usuarios.append(usuario)
-                elif unidecode(campo_busca).upper() == unidecode(usuario.username).upper():
-                    usuarios.append(usuario)
-        if len(usuarios) == 0:
-                flash(u'Nenhum item corresponde ao valor pesquisado!', category='warning')
+    if session['admin'] == True:
+        form = BuscaForm()
+        if form.validate_on_submit():
+            usuarios_teste = Usuario.query.order_by(Usuario.nome).all()
+            usuarios = list()
+            campo_busca = request.form['campo']
+            try:
+                campo_id = int(campo_busca)
+                for usuario in usuarios_teste:
+                    if campo_id == usuario.id:
+                        usuarios.append(usuario)
+                    elif unidecode(campo_busca).upper() == unidecode(usuario.nome).upper():
+                        usuario.append(usuario)
+                    elif unidecode(campo_busca).upper() == unidecode(usuario.username).upper():
+                        usuarios.append(usuario)
+            except:
+                for usuario in usuarios_teste:
+                    if unidecode(campo_busca).upper() == unidecode(usuario.nome).upper():
+                        usuarios.append(usuario)
+                    elif unidecode(campo_busca).upper() == unidecode(usuario.username).upper():
+                        usuarios.append(usuario)
+            if len(usuarios) == 0:
+                    flash(u'Nenhum item corresponde ao valor pesquisado!', category='warning')
+            return(render_template('usuarios.html', usuarios=usuarios, form=form, action=url_for('listar_usuarios')))
+        usuarios = Usuario.query.order_by(Usuario.nome).all()
         return(render_template('usuarios.html', usuarios=usuarios, form=form, action=url_for('listar_usuarios')))
-    usuarios = Usuario.query.order_by(Usuario.nome).all()
-    return(render_template('usuarios.html', usuarios=usuarios, form=form, action=url_for('listar_usuarios')))
+    flash(u'Apenas administradores podem listar os usuários cadastrados!', category='warning')
+    return (redirect(url_for('root')))
 
 @app.route('/usuario/remover/<id_usuario>', methods=['POST','GET'])
 def remover_usuario(id_usuario):
@@ -291,7 +300,6 @@ def emprestar_livro():
         livroAlterado.disponivel = False
         db.session.add(novoEmprestimo)
         db.session.commit()
-        app.logger.debug('Novo emprestimo')
         flash(u'Empréstimo realizado com sucesso!', category='info')
         return(redirect(url_for('root')))
     return(render_template('formEmprestimo.html',
@@ -363,7 +371,7 @@ def remover_emprestimo(id_emprestimo):
     emprestimo = Emprestimo.query.get(id_emprestimo)
     id_livro = emprestimo.id_livro
     livro = Livro.query.get(id_livro)
-    if livro.disponivel == True:
+    if livro is None or livro.disponivel == True:
         db.session.delete(emprestimo)
         db.session.commit()
         flash(u'Linha de empréstimo removida com sucesso!', category='info')
@@ -508,6 +516,7 @@ def login():
         senhahash = hashlib.sha1(senha.encode('utf8')).hexdigest()
         linha = Usuario.query.filter(Usuario.username==usuario,Usuario.senha==senhahash).all()
         if (len(linha) > 0):
+            session.clear()
             session['autenticado'] = True
             session['usuario'] = linha[0].id
             session['nome'] = linha[0].nome
