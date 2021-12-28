@@ -96,19 +96,19 @@ def listar_livros():
             for livro in livros_teste:
                 if campo_id == livro.id:
                     livros.append(livro)
-                elif unidecode(campo_busca).upper() == unidecode(livro.titulo).upper():
+                if unidecode(campo_busca).upper() == unidecode(livro.titulo).upper():
                     livros.append(livro)
-                elif unidecode(campo_busca).upper() == unidecode(livro.autor).upper():
+                if unidecode(campo_busca).upper() == unidecode(livro.autor).upper():
                     livros.append(livro)
-                elif unidecode(campo_busca).upper() == unidecode(livro.genero).upper():
+                if unidecode(campo_busca).upper() == unidecode(livro.genero).upper():
                     livros.append(livro)
         except:
             for livro in livros_teste:
                 if unidecode(campo_busca).upper() == unidecode(livro.titulo).upper():
                     livros.append(livro)
-                elif unidecode(campo_busca).upper() == unidecode(livro.autor).upper():
+                if unidecode(campo_busca).upper() == unidecode(livro.autor).upper():
                     livros.append(livro)
-                elif unidecode(campo_busca).upper() == unidecode(livro.genero).upper():
+                if unidecode(campo_busca).upper() == unidecode(livro.genero).upper():
                     livros.append(livro)
         if len(livros) == 0:
             flash(u'Nenhum item corresponde ao valor pesquisado!', category='warning')
@@ -216,15 +216,15 @@ def listar_usuarios():
                 for usuario in usuarios_teste:
                     if campo_id == usuario.id:
                         usuarios.append(usuario)
-                    elif unidecode(campo_busca).upper() == unidecode(usuario.nome).upper():
+                    if unidecode(campo_busca).upper() == unidecode(usuario.nome).upper():
                         usuario.append(usuario)
-                    elif unidecode(campo_busca).upper() == unidecode(usuario.username).upper():
+                    if unidecode(campo_busca).upper() == unidecode(usuario.username).upper():
                         usuarios.append(usuario)
             except:
                 for usuario in usuarios_teste:
                     if unidecode(campo_busca).upper() == unidecode(usuario.nome).upper():
                         usuarios.append(usuario)
-                    elif unidecode(campo_busca).upper() == unidecode(usuario.username).upper():
+                    if unidecode(campo_busca).upper() == unidecode(usuario.username).upper():
                         usuarios.append(usuario)
             if len(usuarios) == 0:
                     flash(u'Nenhum item corresponde ao valor pesquisado!', category='warning')
@@ -322,20 +322,26 @@ def listar_emprestimos():
             for emprestimo in emprestimos_teste:
                 if campo_id == emprestimo.id:
                     emprestimos.append(emprestimo)
-                elif unidecode(campo_busca).upper() == unidecode(emprestimo.usuario.nome).upper():
-                    emprestimos.append(emprestimo)
-                elif unidecode(campo_busca).upper() == unidecode(emprestimo.ficha.nome).upper():
-                    emprestimos.append(emprestimo)
-                elif unidecode(campo_busca).upper() == unidecode(emprestimo.livro.titulo).upper():
-                    emprestimos.append(emprestimo)
+                if emprestimo.usuario is not None:
+                    if unidecode(campo_busca).upper() == unidecode(emprestimo.usuario.nome).upper():
+                        emprestimos.append(emprestimo)
+                if emprestimo.ficha is not None:
+                    if unidecode(campo_busca).upper() == unidecode(emprestimo.ficha.nome).upper():
+                        emprestimos.append(emprestimo)
+                if emprestimo.livro is not None:
+                    if unidecode(campo_busca).upper() == unidecode(emprestimo.livro.titulo).upper():
+                        emprestimos.append(emprestimo)
         except:
             for emprestimo in emprestimos_teste:
-                if unidecode(campo_busca).upper() == unidecode(emprestimo.usuario.nome).upper():
-                    emprestimos.append(emprestimo)
-                elif unidecode(campo_busca).upper() == unidecode(emprestimo.ficha.nome).upper():
-                    emprestimos.append(emprestimo)
-                elif unidecode(campo_busca).upper() == unidecode(emprestimo.livro.titulo).upper():
-                    emprestimos.append(emprestimo)
+                if emprestimo.usuario is not None:
+                    if unidecode(campo_busca).upper() == unidecode(emprestimo.usuario.nome).upper():
+                        emprestimos.append(emprestimo)
+                if emprestimo.ficha is not None:
+                    if unidecode(campo_busca).upper() == unidecode(emprestimo.ficha.nome).upper():
+                        emprestimos.append(emprestimo)
+                if emprestimo.livro is not None:
+                    if unidecode(campo_busca).upper() == unidecode(emprestimo.livro.titulo).upper():
+                        emprestimos.append(emprestimo)
         return(render_template('emprestimos.html', emprestimos=emprestimos, form=form, action=url_for('listar_emprestimos')))
     emprestimos = Emprestimo.query.order_by(Emprestimo.data_emprestimo.desc()).all()
     return(render_template('emprestimos.html', emprestimos=emprestimos, form=form, action=url_for('listar_emprestimos')))
@@ -449,15 +455,15 @@ def listar_fichas():
             for ficha in fichas_teste:
                 if campo_id == ficha.id:
                     fichas.append(ficha)
-                elif unidecode(campo_busca).upper() == unidecode(ficha.nome).upper():
+                if unidecode(campo_busca).upper() == unidecode(ficha.nome).upper():
                     fichas.append(ficha)
-                elif unidecode(campo_busca).upper() == unidecode(ficha.cpf).upper():
+                if unidecode(campo_busca).upper() == unidecode(ficha.cpf).upper():
                     fichas.append(ficha)
         except:
             for ficha in fichas_teste:
                 if unidecode(campo_busca).upper() == unidecode(ficha.nome).upper():
                     fichas.append(ficha)
-                elif unidecode(campo_busca).upper() == unidecode(ficha.cpf).upper():
+                if unidecode(campo_busca).upper() == unidecode(ficha.cpf).upper():
                     fichas.append(ficha)
         if len(fichas) == 0:
             flash(u'Nenhum item corresponde ao valor pesquisado!', category='warning')
