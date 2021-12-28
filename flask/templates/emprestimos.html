@@ -2,7 +2,7 @@
 
 {% block conteudo %}
 
-<div class="container-fluid mx-auto" style="width: 75%;">
+<div class="container-fluid mx-auto mb-1" style="width: 75%; max-height: 100vh;">
     {% from 'bootstrap/form.html' import render_field %}
 
     <form method="post">
@@ -15,7 +15,7 @@
             <a class="btn btn-secondary btn-sm" href="{{url_for('listar_emprestimos')}}" role="button">LIMPAR</a>
         </div>
     </form>
-    <div style="max-height: 400px; overflow-y: auto;">
+    <div style="max-height: 60vh; overflow-y: auto;">
         <table class=" table table-light border rounded-3" style="overflow: hidden;">
             <thead>
             <tr class="table-secondary">
