@@ -353,12 +353,12 @@ def devolver_emprestimo(id_emprestimo):
         return(redirect(url_for('login')))
     id_emprestimo = int(id_emprestimo)
     emprestimo = Emprestimo.query.get(id_emprestimo)
-    emprestimo.data_devolucao = datetime.datetime.now()
     livro = Livro.query.get(emprestimo.id_livro)
     ficha = Ficha.query.get(emprestimo.id_ficha)
-    if livro.disponivel == True:
+    if emprestimo.data_devolucao is not None:
         flash(u'O livro já foi devolvido!', category='warning')
     else:
+        emprestimo.data_devolucao = datetime.datetime.now()
         ficha.qtdLivros -= 1
         ficha.totalLivros += 1
         if ficha.qtdLivros == 0:
